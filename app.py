@@ -24,31 +24,38 @@ def return_html():
     if request.method == 'POST':
         arges = dict(request.form.deepcopy())
 
-        print (arges)
-        print(request.args)
-        if arges.get("proxyUrl"):
-            url= arges.get("proxyUrl")
-            arges.pop("proxyUrl")
-            r = requests.post(url=url, data=arges, verify=False)
-            ht = r.content
-            # close web browser
-            r.close()
-            return ht
-        else:
+        try:
+            print (arges)
+            print(request.args)
+            if arges.get("proxyUrl"):
+                url= arges.get("proxyUrl")
+                arges.pop("proxyUrl")
+                r = requests.post(url=url, data=arges, verify=False)
+                ht = r.content
+                # close web browser
+                r.close()
+                return ht
+            else:
+                return "Неудачные параметры"
+        except:
             return "Неудачные параметры"
-    else:
-        arges = dict(request.args.deepcopy())
-        print(arges)
-        if arges.get("proxyUrl"):
-            url= arges.get("proxyUrl")
-            arges.pop("proxyUrl")
-            r = requests.get(url=url, params=arges, verify=False)
-            ht = r.content
 
-            # close web browser
-            r.close()
-            return ht
-        else:
+    else:
+        try:
+            arges = dict(request.args.deepcopy())
+            print(arges)
+            if arges.get("proxyUrl"):
+                url= arges.get("proxyUrl")
+                arges.pop("proxyUrl")
+                r = requests.get(url=url, params=arges, verify=False)
+                ht = r.content
+
+                # close web browser
+                r.close()
+                return ht
+            else:
+                return "Неудачные параметры"
+        except:
             return "Неудачные параметры"
 
 if __name__ == '__main__':
