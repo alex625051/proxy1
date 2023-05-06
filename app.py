@@ -1,62 +1,48 @@
 # -*- coding: utf-8 -*-
-import time
-import requests
+
+import datetime
 from flask import Flask, redirect, url_for, request
-# from selenium import webdriver
-# from selenium.webdriver.common.action_chains import ActionChains
-# from selenium.webdriver.common.keys import Keys
 app = Flask(__name__)
 
 
 @app.route('/')
 @app.route('/post')
-# def hello_world():
-#     r=requests.get('https://www.enforta.ru/contacts/branches/cherepovec.html', verify=False)
-#     ht=r.content
-#     print(ht)
-#
-#     # close web browser
-#     r.close()
-#     return ht
-
 @app.route('/get',methods = ['POST', 'GET'])
 def return_html():
-    if request.method == 'POST':
         arges = dict(request.form.deepcopy())
 
         try:
             print (arges)
             print(request.args)
-            if arges.get("proxyUrl"):
-                url= arges.get("proxyUrl")
-                arges.pop("proxyUrl")
-                r = requests.post(url=url, data=arges, verify=False)
-                ht = r.content
-                # close web browser
-                r.close()
-                return ht
-            else:
-                return "Неудачные параметры"
-        except:
+            print (request.data)
+            with open('logger.txt','r', encoding='UTF-8') as fi:
+                cc=fi.read()
+
+            with open('logger.txt','w', encoding='UTF-8') as fi:
+                poster=f'''{datetime.datetime.now()}
+                { ', '.join( [f'{k}:{dict(arges)[k]}' for k in dict(arges)]) }
+                { ', '.join( [f'{k}:{dict(request.args)[k]}' for k in dict(request.args)]) }
+                {request.data}
+                {'----------------------------------------------'}
+                
+                '''
+                fi.write(poster+cc)
+            return poster.replace('\n','<br/>')
+        except Exception as e:
+            return str(e)
             return "Неудачные параметры"
 
-    else:
-        try:
-            arges = dict(request.args.deepcopy())
-            print(arges)
-            if arges.get("proxyUrl"):
-                url= arges.get("proxyUrl")
-                arges.pop("proxyUrl")
-                r = requests.get(url=url, params=arges, verify=False)
-                ht = r.content
+@app.route('/show',methods = ['GET'])
+def return_req():
 
-                # close web browser
-                r.close()
-                return ht
-            else:
-                return "Неудачные параметры"
-        except:
-            return "Неудачные параметры"
+    try:
+        with open('logger.txt','r', encoding='UTF-8') as fi:
+            return str(fi.read().replace('\n','<br/>'))
+    except Exception as e:
+        return str(e)
+        return "Неудачные параметры"
+
+
 
 if __name__ == '__main__':
     app.run()
